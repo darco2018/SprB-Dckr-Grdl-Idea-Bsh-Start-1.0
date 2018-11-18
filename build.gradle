@@ -1,0 +1,64 @@
+buildscript {
+	ext {
+		springBootVersion = '2.1.0.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+//https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/#reacting-to-other-plugins
+// A typical Spring Boot project will apply these as a minimum
+apply plugin: 'java' // creates JAR, creates a BootRun task named bootRun, creates layout
+apply plugin: 'io.spring.dependency-management' // import the spring-boot-dependencies bom
+//----------------------------------------------
+//apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+// detects when certain other plugins are applied and reacts accordingly.
+//apply plugin: 'eclipse'
+// apply plugin: 'war' --> disables JAR, creates src/main/webapp
+/*The default behavior of the War task is to copy the content of src/main/webapp to the root of the archive.
+Your webapp directory may of course contain a WEB-INF sub-directory, which may contain a web.xml file.
+Your compiled classes are compiled to WEB-INF/classes. All the dependencies of the runtime [1] configuration
+are copied to WEB-INF/lib.
+ */
+
+
+group = 'pl.ust'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// war - the same
+jar {
+    baseName = 'sboot-gradle-ex-2'
+    version =  '1.0'
+}
+
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	implementation('org.springframework.boot:spring-boot-starter-actuator')
+	implementation('org.springframework.boot:spring-boot-starter-web')
+    //implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	runtimeOnly('mysql:mysql-connector-java')
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+}
+
+bootRun {
+    sourceResources sourceSets.main // application’s static resources are loaded from their source location
+    // This makes them reloadable in the live application which can be helpful at development time.
+}
+
+springBoot {
+    buildInfo() // Spring Boot Actuator’s info endpoint automatically publishes information about your build in the presence of a META-INF/build-info.properties file. 
+}
+
+// ./gradlew bootRun --args='--spring.profiles.active=dev' -->> To run your application without first building an archive use the bootRun task: 
+// bootRun- Custom JavaExec task for running a Spring Boot application.
